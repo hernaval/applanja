@@ -1,0 +1,1 @@
+export {default as Title} from "@/components/typo/Title"
