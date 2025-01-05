@@ -1,13 +1,15 @@
+import ActionButton from '@/components/buttons/ActionButton'
 import { TextField } from '@/components/forms'
 import { MainView } from '@/components/layouts'
 import { Title } from '@/components/typo'
+import { Box } from '@/components/ui/box'
 import { addWeightEntry } from '@/features/weight/add-weight-entry'
 import { retrieveWeightEntries } from '@/features/weight/retrieve-weight-entries'
 import { WeightEntry } from '@/features/weight/types/weight-entry'
 import DateTimePicker from '@react-native-community/datetimepicker'
 import dayjs from 'dayjs'
 import { useEffect, useState } from 'react'
-import { Button, FlatList, StyleSheet, Text, TextInput, TouchableHighlight, View } from 'react-native'
+import { FlatList, StyleSheet, Text, TextInput, TouchableHighlight, TouchableOpacity, View } from 'react-native'
 
 type WeightEntryItemProps = {
   item: WeightEntry
@@ -59,25 +61,33 @@ export default function WeightScreen() {
         onChange={changeDate}
         />}
 
-      <Title text='General' color='cloudy' size='xl' />
-      <TouchableHighlight
+    <Box
+      className='mb-5'
+    />
+
+    <TouchableHighlight
         onPress={() => setShowDatePicker(true)}
-        underlayColor="#d3d3d3"
-        activeOpacity={0.1}
+        underlayColor="#fffffd"
+        activeOpacity={0.5}
       >
         <View style={styles.button}>
         <Text> {dayjs(date).format("DD-MM-YYYY")} </Text>
         </View>
       </TouchableHighlight>
 
-      <TextField label='Poids en kg' defaultValue={weight.toString()} onChange={changeWeight}/>
+      <Title text='General' color='tertiary-1' size='xl' />
 
+      <TextField mode='numeric' label='Poids en kg' defaultValue={weight.toString()} onChange={changeWeight} placeholder='Entrer votre poids actuel'/>
+      <TextField mode='numeric' label='Poids en kg' defaultValue={weight.toString()} onChange={changeWeight} placeholder='Entrer votre poids actuel'/>
+      <TextField mode='numeric' label='Poids en kg' defaultValue={weight.toString()} onChange={changeWeight} placeholder='Entrer votre poids actuel'/>
+      <TextField mode='numeric' label='Poids en kg' defaultValue={weight.toString()} onChange={changeWeight} placeholder='Entrer votre poids actuel'/>
+
+    <Box
+      className='m-5'
+    />
        
 
-      <Button
-        onPress={save}
-        title='Enregister'
-      />
+     <ActionButton onPress={save} text='Enregister' />
 
       <FlatList 
         data={weightEntries}
