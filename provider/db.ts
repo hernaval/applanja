@@ -61,7 +61,9 @@ async function updateWeightEntry(entry: WeightEntry) {
     try {
         const db = await SQLiteDatabase.openDatabaseAsync('applanja.bd');
         await db.runAsync(`
-            UPDATE WeightEntry set value = '${entry.value}', note = '${entry.note}';    
+            UPDATE WeightEntry set value = '${entry.value}', note = '${entry.note}' 
+                WHERE id = ${entry.id}
+            ;    
         `)
     }catch(e) {
         console.log(e)
@@ -76,7 +78,13 @@ async function getAllWeightEntries() {
 
 async function getWeightEntryForDate(date: Date) {
     const db    = await SQLiteDatabase.openDatabaseAsync('applanja.bd');
-    const entry = db.getFirstAsync(`select * from WeightEntry where date = '${dayjs(date).format("DD-MM-YYYY")}' `)
+    const entry = db.getFirstAsync(`SELECT * from WeightEntry WHERE date = '${dayjs(date).format("DD-MM-YYYY")}' `)
+    return entry
+}
+
+async function getLastWeightEntry() {
+    const db    = await SQLiteDatabase.openDatabaseAsync('applanja.bd');
+    const entry = db.getFirstAsync(`SELECT * from WeightEntry ORDER BY id desc limit 1`)
     return entry
 }
 
@@ -85,5 +93,6 @@ export {
     updateWeightEntry,
     initDb,
     getAllWeightEntries,
-    getWeightEntryForDate
+    getWeightEntryForDate,
+    getLastWeightEntry,
 }

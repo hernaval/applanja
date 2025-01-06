@@ -10,21 +10,14 @@ import DateTimePicker from '@react-native-community/datetimepicker'
 import dayjs from 'dayjs'
 import 'dayjs/locale/fr'
 import { useEffect, useState } from 'react'
-import { FlatList, Pressable, ScrollView, StyleSheet, Text, TextInput, TextInputBase, TouchableHighlight, TouchableOpacity, TouchableWithoutFeedback, View } from 'react-native'
+import { ActivityIndicator, FlatList, Pressable, ScrollView, StyleSheet, Text, TextInput, TextInputBase, TouchableHighlight, TouchableOpacity, TouchableWithoutFeedback, View } from 'react-native'
 import AntIcon from '@expo/vector-icons/AntDesign'
 import { HStack } from '@/components/ui/hstack'
 import Ionicons from '@expo/vector-icons/Ionicons'
 import { FONT_NAME } from '@/constants'
-
-type WeightEntryItemProps = {
-  item: WeightEntry
-}
-const WeightEntryItem = (props: WeightEntryItemProps) => {
-  const {value, date} = props.item
-  return (
-    <Text>{value}</Text>
-  )
-}
+import LoadingSpinner from '@/components/LoadingSpinner'
+import { retrieveDayWeightEntry } from '@/features/weight/retrieve-day-weight-entry'
+import { retrieveLastWeightEntry } from '@/features/weight/retrieve-last-weight-entry'
 
 export default function WeightScreen() {
   const [weight, setWeight]                         = useState<number>(60)
@@ -32,10 +25,12 @@ export default function WeightScreen() {
   const today                                       = new Date(Date.now())
   const [date, setDate]                             = useState(today)
   const [goalDate, setGoalDate]                     = useState(null)
-  const [weightEntries, setWeightEntries]           = useState<WeightEntry[]>([])
+  const [weightEntry, setWeightEntry]               = useState<WeightEntry | null>(null)
+  const [lastWeightEntry, setLastWeightEntry]       = useState<WeightEntry | null>(null)
   const [showDatePicker, setShowDatePicker]         = useState(false)
   const [showGoalDatePicker, setShowGoalDatePicker] = useState(false)
   const [note, setNote]                             = useState("")
+  const [isLoading, setIsLoading]                   = useState(false)
 
   const changeWeight = (value: string) => {
     setWeight(Number(value))
@@ -45,12 +40,26 @@ export default function WeightScreen() {
   }
   const save = () => {
     console.log('save weight')
-    addWeightEntry({date: date, value: weight, note})
-    fetchWeightEntries()
+    setIsLoading(true)
+    addWeightEntry({id: weightEntry?.id,date: date, value: weight, note})
+    setIsLoading(false)
   }
-  const fetchWeightEntries = async () => {
-    const results: WeightEntry[] = await retrieveWeightEntries();
-    setWeightEntries(results)
+  const fetchDayEntry = async () => {
+    setIsLoading(true)
+    const entry: WeightEntry | null = await retrieveDayWeightEntry(date)
+    if(entry != null) {
+      setWeightEntry(entry)
+    }
+    setIsLoading(false)
+  }
+
+  const fetchLastEntry = async () => {
+    setIsLoading(true)
+    const entry: WeightEntry | null = await retrieveLastWeightEntry()
+    if(entry != null) {
+      setLastWeightEntry(entry)
+    }
+    setIsLoading(false)
   }
 
   const changeDate = (target: string, date: any) => {
@@ -65,7 +74,17 @@ export default function WeightScreen() {
   }
 
   useEffect(() => {
-    fetchWeightEntries()
+    fetchDayEntry()
+
+    return () => {
+      //TODO move entry state of the weightEntry object 
+      setWeightEntry(null)
+      setNote("")
+    }
+  }, [date])
+
+  useEffect(() => {
+    fetchLastEntry()
   }, [])
 
   return (
@@ -118,7 +137,7 @@ export default function WeightScreen() {
     >
       <Ionicons name='alert-circle-outline' color={'rgba(52, 52,52, 0.45)'} />
         <Text className='' style={{color: 'rgba(52, 52,52, 0.45)', fontFamily: FONT_NAME  }}> Dernier poids enregistré : </Text>
-        <Text className='text-secondary-1 font-bold text-xl'>60kg</Text>
+        <Text className='text-secondary-1 font-bold text-xl'>{lastWeightEntry == null ? 'N/A': `${lastWeightEntry.value}kg` }</Text>
     </View>
 
         <Box
@@ -136,12 +155,13 @@ export default function WeightScreen() {
             >
               <View
                 className='flex-1'
-              >
+              > 
                   <TextInput
                   className='h-14 text-secondary-1'
                   placeholder='Entrer votre poids actuel'
                   keyboardType='numeric'
                   onChangeText={changeWeight}
+                  defaultValue={weightEntry?.value.toString() ?? ''}
                   />
               </View>
               
@@ -165,6 +185,7 @@ export default function WeightScreen() {
                   multiline
                   numberOfLines={5}
                   onChangeText={(value) => setNote(value)}
+                  defaultValue={weightEntry?.note ?? ''}
                   />
               </View>
               
@@ -239,12 +260,13 @@ export default function WeightScreen() {
 {/* action view with button  */}
 
       {/* <FlatList 
-        data={weightEntries}
-        renderItem={({item}) => <WeightEntryItem item={item}  />}
+        data={weightEntry}
+        renderItemy{item}) => <WeightEntryItem item={item}  />}
         keyExtractor={item => item.id?.toString()!!}
         />       */}
-      <ActionButton onPress={save} text='Enregistrer' />
+      <ActionButton onPress={save} text={weightEntry == null ? 'Enregistrer' : 'Mettre à jour'} />
         </View>
+        <LoadingSpinner visible={isLoading} />
     </MainView>
   )
 }
