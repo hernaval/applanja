@@ -8,7 +8,7 @@ export async function retrieveWeightEntries(): Promise<WeightEntry[]> {
             const results = await getAllWeightEntries();
             entries = results as WeightEntry[];
             
-            console.log("entries", entries)
+            console.log("finding entries", entries.length)
         })  
         .catch(e => {
             console.log("error retrieving ", e)

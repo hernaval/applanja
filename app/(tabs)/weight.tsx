@@ -29,12 +29,13 @@ const WeightEntryItem = (props: WeightEntryItemProps) => {
 export default function WeightScreen() {
   const [weight, setWeight]                         = useState<number>(60)
   const [desiredWeight, setDesiredWeight]           = useState<number>(60)
-  const today                                       = new Date(2025, 0, 1)
+  const today                                       = new Date(Date.now())
   const [date, setDate]                             = useState(today)
   const [goalDate, setGoalDate]                     = useState(null)
   const [weightEntries, setWeightEntries]           = useState<WeightEntry[]>([])
   const [showDatePicker, setShowDatePicker]         = useState(false)
   const [showGoalDatePicker, setShowGoalDatePicker] = useState(false)
+  const [note, setNote]                             = useState("")
 
   const changeWeight = (value: string) => {
     setWeight(Number(value))
@@ -44,7 +45,7 @@ export default function WeightScreen() {
   }
   const save = () => {
     console.log('save weight')
-    addWeightEntry({date: date, value: weight})
+    addWeightEntry({date: date, value: weight, note})
     fetchWeightEntries()
   }
   const fetchWeightEntries = async () => {
@@ -116,7 +117,7 @@ export default function WeightScreen() {
       className='flex-row items-center justify-center'
     >
       <Ionicons name='alert-circle-outline' color={'rgba(52, 52,52, 0.45)'} />
-        <Text className='' style={{color: 'rgba(52, 52,52, 0.45)', fontFamily: FONT_NAME}}> Dernier poids enregistré : </Text>
+        <Text className='' style={{color: 'rgba(52, 52,52, 0.45)', fontFamily: FONT_NAME  }}> Dernier poids enregistré : </Text>
         <Text className='text-secondary-1 font-bold text-xl'>60kg</Text>
     </View>
 
@@ -163,6 +164,7 @@ export default function WeightScreen() {
                   placeholder='Ajouter une note'
                   multiline
                   numberOfLines={5}
+                  onChangeText={(value) => setNote(value)}
                   />
               </View>
               
