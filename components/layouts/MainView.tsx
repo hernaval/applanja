@@ -8,7 +8,7 @@ type MainViewProps = {
 const MainView: React.FC<MainViewProps> = ({children}) => {
   return (
     <VStack
-      className='h-full bg-white p-2'
+      className='h-full bg-white p-2 flex'
     >
       {children}
     </VStack>

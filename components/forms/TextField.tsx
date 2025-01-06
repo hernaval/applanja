@@ -18,7 +18,7 @@ type TextFieldProps = {
 const TextField = (props: TextFieldProps) => {
   return (
     <Box 
-       className='flex flex-row items-center bg-secondary-10 px-2 py-1 rounded-[7px] m-1'
+       className='flex-1 flex-row items-center bg-secondary-10 px-2 py-1 rounded-[7px] m-1'
       >
    <TextInput 
     editable

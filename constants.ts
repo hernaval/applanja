@@ -1,0 +1,1 @@
+export const FONT_NAME='SpaceMono_400Regular'

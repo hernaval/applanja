@@ -1,5 +1,7 @@
 import React from 'react'
 import { Button, ButtonText } from '../ui/button'
+import { FONT_NAME } from '@/constants'
+import { Text, TouchableHighlight } from 'react-native'
 
 type ActionButtonProps = {
     onPress: () => void
@@ -7,13 +9,15 @@ type ActionButtonProps = {
 }
 const ActionButton = (props: ActionButtonProps) => {
   return (
-    <Button
+    <TouchableHighlight
     onPress={props.onPress}
-    className='bg-primary-1 h-14 rounded-full'
-    android_ripple={{color: 'rgba(35, 110, 250, 1)'}}
+    className='bg-primary-1 rounded-full mx-8 py-5'
+    underlayColor={'rgba(35, 110, 250, 0.8)'}
     >
-        <ButtonText className='text-white'>{props.text}</ButtonText>
-    </Button>
+        <Text className='text-white font-normal text-center'
+          style={{fontFamily: FONT_NAME}}
+        >{props.text}</Text>
+    </TouchableHighlight>
   )
 }
 

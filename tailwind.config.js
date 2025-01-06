@@ -49,7 +49,7 @@ module.exports = {
         },
         tertiary: {
           50: 'rgb(var(--color-tertiary-50)/<alpha-value>)',
-          100: 'rgb(var(--color-tertiary-100)/<alpha-value>)',
+          100: 'rgba(52, 52, 52, 0.5)',
           200: 'rgb(var(--color-tertiary-200)/<alpha-value>)',
           300: 'rgb(var(--color-tertiary-300)/<alpha-value>)',
           400: 'rgb(var(--color-tertiary-400)/<alpha-value>)',

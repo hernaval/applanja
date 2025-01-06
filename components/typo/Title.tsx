@@ -1,3 +1,4 @@
+import { FONT_NAME } from '@/constants'
 import React from 'react'
 import { Text } from 'react-native'
 
@@ -11,6 +12,7 @@ const Title = (props: TitleProps) => {
   return (
     <Text 
     className={`text-${color} text-${size}`}
+    style={{fontFamily: FONT_NAME}}
     >{text}</Text>
   )
 }
