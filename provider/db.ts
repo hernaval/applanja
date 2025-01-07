@@ -82,6 +82,15 @@ async function getWeightEntryForDate(date: Date) {
     return entry
 }
 
+async function getWeightEntryBetween(from: Date, to: Date) {
+    console.log(dayjs(from).format("DD-MM-YYYY"), to)
+    const db    = await SQLiteDatabase.openDatabaseAsync('applanja.bd');
+    const entries = await db.getAllAsync(`SELECT * from WeightEntry 
+        WHERE (DATE) > '2025-01-05'
+        `)
+    return entries
+}
+
 async function getLastWeightEntry() {
     const db    = await SQLiteDatabase.openDatabaseAsync('applanja.bd');
     const entry = db.getFirstAsync(`SELECT * from WeightEntry ORDER BY id desc limit 1`)
@@ -95,4 +104,5 @@ export {
     getAllWeightEntries,
     getWeightEntryForDate,
     getLastWeightEntry,
+    getWeightEntryBetween
 }

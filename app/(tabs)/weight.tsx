@@ -259,11 +259,7 @@ export default function WeightScreen() {
       <View>
 {/* action view with button  */}
 
-      {/* <FlatList 
-        data={weightEntry}
-        renderItemy{item}) => <WeightEntryItem item={item}  />}
-        keyExtractor={item => item.id?.toString()!!}
-        />       */}
+     
       <ActionButton onPress={save} text={weightEntry == null ? 'Enregistrer' : 'Mettre à jour'} />
         </View>
         <LoadingSpinner visible={isLoading} />

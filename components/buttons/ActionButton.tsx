@@ -14,7 +14,7 @@ const ActionButton = (props: ActionButtonProps) => {
     className='bg-primary-1 rounded-full mx-8 py-5'
     underlayColor={'rgba(35, 110, 250, 0.8)'}
     >
-        <Text className='text-white font-normal text-center'
+        <Text className='text-white font-normal text-center tracking-wider'
           style={{fontFamily: FONT_NAME}}
         >{props.text}</Text>
     </TouchableHighlight>
