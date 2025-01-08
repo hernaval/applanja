@@ -17,6 +17,7 @@ async function initDb() {
             date DATE NOT NULL,
             value INTEGER NOT NULL
         );
+
     `);
 
     const columnNotExist = async (name: string): Promise<boolean> => {
@@ -46,11 +47,11 @@ async function initDb() {
 }
 
 async function saveWeightEntry(entry: WeightEntry) {
-    console.log(entry.date, entry.value)
+    console.log("save new entry", entry)
     try {
         const db = await SQLiteDatabase.openDatabaseAsync('applanja.bd');
         await db.runAsync(`
-            INSERT INTO WeightEntry(date, value, note) VALUES ('${dayjs(entry.date).format("DD-MM-YYYY")}', '${entry.value}', '${entry.note}');    
+            INSERT INTO WeightEntry(date, value, note) VALUES ('${dayjs(entry.date).format('YYYY-MM-DD')}', '${entry.value}', '${entry.note}');    
         `)
     }catch(e) {
         console.log(e)
@@ -77,16 +78,18 @@ async function getAllWeightEntries() {
 }
 
 async function getWeightEntryForDate(date: Date) {
+    console.log("entry for date ", date)
     const db    = await SQLiteDatabase.openDatabaseAsync('applanja.bd');
-    const entry = db.getFirstAsync(`SELECT * from WeightEntry WHERE date = '${dayjs(date).format("DD-MM-YYYY")}' `)
+    const entry = db.getFirstAsync(`SELECT * from WeightEntry WHERE date = '${dayjs(date).format("YYYY-MM-DD")}' `)
     return entry
 }
 
 async function getWeightEntryBetween(from: Date, to: Date) {
-    console.log(dayjs(from).format("DD-MM-YYYY"), to)
+    console.log("entry from ",from," to ", to)
     const db    = await SQLiteDatabase.openDatabaseAsync('applanja.bd');
     const entries = await db.getAllAsync(`SELECT * from WeightEntry 
-        WHERE (DATE) > '2025-01-05'
+            WHERE date > '${dayjs(from).format("YYYY-MM-DD")}' 
+            AND date <= '${dayjs(to).format("YYYY-MM-DD")}'
         `)
     return entries
 }

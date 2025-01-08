@@ -9,7 +9,7 @@ import { WeightEntry } from '@/features/weight/types/weight-entry'
 import DateTimePicker from '@react-native-community/datetimepicker'
 import dayjs from 'dayjs'
 import 'dayjs/locale/fr'
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { ActivityIndicator, FlatList, Pressable, ScrollView, StyleSheet, Text, TextInput, TextInputBase, TouchableHighlight, TouchableOpacity, TouchableWithoutFeedback, View } from 'react-native'
 import AntIcon from '@expo/vector-icons/AntDesign'
 import { HStack } from '@/components/ui/hstack'
@@ -38,17 +38,22 @@ export default function WeightScreen() {
   const changeDesiredWeight = (value: string) => {
     setDesiredWeight(Number(value))
   }
-  const save = () => {
-    console.log('save weight')
+  const save = async () => {
+    console.log('save weight ', date, weight)
     setIsLoading(true)
-    addWeightEntry({id: weightEntry?.id,date: date, value: weight, note})
+    const newEntry: WeightEntry = {id: weightEntry?.id ,date: date, value: weight, note}
+    await addWeightEntry(newEntry)
+    fetchDayEntry()
     setIsLoading(false)
   }
+
   const fetchDayEntry = async () => {
     setIsLoading(true)
     const entry: WeightEntry | null = await retrieveDayWeightEntry(date)
     if(entry != null) {
       setWeightEntry(entry)
+    } else {
+      setWeightEntry(null)
     }
     setIsLoading(false)
   }
@@ -58,7 +63,7 @@ export default function WeightScreen() {
     const entry: WeightEntry | null = await retrieveLastWeightEntry()
     if(entry != null) {
       setLastWeightEntry(entry)
-    }
+    } 
     setIsLoading(false)
   }
 
@@ -78,7 +83,7 @@ export default function WeightScreen() {
 
     return () => {
       //TODO move entry state of the weightEntry object 
-      setWeightEntry(null)
+      // setWeightEntry(null)
       setNote("")
     }
   }, [date])
@@ -99,7 +104,7 @@ export default function WeightScreen() {
             locale={'fr'}
             value={date} 
             onChange={(event, value) => changeDate('data', value)}
-        
+            maximumDate={new Date(Date.now())}
             />}
 
           {showGoalDatePicker && <DateTimePicker  
@@ -107,6 +112,8 @@ export default function WeightScreen() {
             locale={'fr'}
             value={date} 
             onChange={(event, value) => changeDate('goal', value)}
+            maximumDate={new Date(Date.now())}
+            
             />}
 
         <Box

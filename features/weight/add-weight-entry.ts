@@ -2,26 +2,17 @@ import { getAllWeightEntries, getWeightEntryForDate, initDb, saveWeightEntry, up
 import { WeightEntry } from "./types/weight-entry";
 
 export async function addWeightEntry(entry: WeightEntry): Promise<void> {
-    initDb()
-    .then(async () => {
-
+    try {
+        await initDb()
         const dayEntry = await getWeightEntryForDate(entry.date) as WeightEntry
-        return dayEntry != null 
-    })
-    .then((hasDayEntry: boolean) => {
-        if(hasDayEntry) {
-            updateWeightEntry(entry)
+        if(dayEntry != null) {
+            await updateWeightEntry(entry)
         } else {
-            saveWeightEntry(entry)
+            await saveWeightEntry(entry)
         }
     }
-    )
-    .then(() => {
-        getAllWeightEntries()
-            .then(v => console.log("last entry "))
-    })
-    .catch(e => {
+        catch(e) {
             console.error(e)
-    }) 
-    return ;
+            throw e
+    }
 }
