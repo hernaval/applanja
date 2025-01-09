@@ -41,9 +41,11 @@ function calculateDateRange(range: string): {from: Date, to: Date} {
             return {from: now.subtract(14, 'days').toDate(), to: now.toDate()}
         case "1m":
             return {from: now.subtract(1, 'months').toDate(), to: now.toDate()}
-        case "3w":
+        case "3m":
             return {from: now.subtract(3, 'months').toDate(), to: now.toDate()}
         case "1y":
+            return {from: now.subtract(1, 'years').toDate(), to: now.toDate()}
+        case "all":
             return {from: now.subtract(1, 'years').toDate(), to: now.toDate()}
     }
     return {from: now.toDate(), to: now.toDate()}

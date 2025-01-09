@@ -1,6 +1,8 @@
+export type LiteralRange =  "1w" | "2w" | "1m" | "3m" | "1y" | "all"
+
 export type PredefinedRange = {
     type : 'predefined',
-    range: "1w" | "2w" | "1m" | "3m" | "1y" | ""
+    range: LiteralRange
 } 
 
 export type CustomRange = {

@@ -90,6 +90,7 @@ async function getWeightEntryBetween(from: Date, to: Date) {
     const entries = await db.getAllAsync(`SELECT * from WeightEntry 
             WHERE date > '${dayjs(from).format("YYYY-MM-DD")}' 
             AND date <= '${dayjs(to).format("YYYY-MM-DD")}'
+            ORDER BY date desc
         `)
     return entries
 }
