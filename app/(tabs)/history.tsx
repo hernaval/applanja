@@ -14,6 +14,7 @@ import LoadingSpinner from "@/components/LoadingSpinner";
 import { LiteralRange } from "@/features/weight/types/date-range";
 import { Link } from "expo-router";
 import ActionButton from "@/components/buttons/ActionButton";
+import { HStack } from "@/components/ui/hstack";
 
 interface WeightHistoryItemProps {
   item: WeightEntry
@@ -38,21 +39,35 @@ const WeightHistoryItem: React.FC<WeightHistoryItemProps> = ({item}) => {
                 className="text-sm"
             >{item.date.toString()}</Text>
             <Box className="my-2" />
-            <View 
-                className="flex-row items-center"
-            >
+            <View className="flex-row items-center ">
+                <View 
+                    className="flex-row items-center flex-1"
+                >
                     <Text 
-                    style={{fontFamily: FONT_NAME}}
-                    className="font-bold text-3xl">{item.value} kg</Text>
+                            style={{fontFamily: FONT_NAME}}
+                            className="font-bold text-3xl">{item.value} kg
+                    </Text>
                     <Box className="mx-4" />
                     <View className="flex-row justify-between  items-center w-24 bg-secondary-1 py-1 px-[5px] rounded-full tracking-wide">
                         <Text className="text-xs font-bold"> + </Text>
-                    <Text className="text-xs font-bold">5kg
-                    </Text>
-                    <Ionicons name="trending-up-outline" size={14} className="font-bold" />
+                        <Text className="text-xs font-bold">5kg</Text>
+                        <Ionicons name="trending-up-outline" size={14} className="font-bold" />
+                
 
                     </View>
+                </View>
+                <View >
+                    <HStack>
+                        <TouchableOpacity className="p-1">
+                            <Ionicons name="heart-outline" size={24} />
+                        </TouchableOpacity>
+                        <TouchableOpacity className="p-1">
+                            <Ionicons name="flame-outline" size={24} />
+                        </TouchableOpacity>
+                    </HStack>
+                </View>
             </View>
+           
         </VStack>
     </View>
 }
@@ -90,12 +105,6 @@ export default function History() {
     useEffect(() => {
         fetchWeightHistory()
     }, [selectedPredefinedRange])
-
-    // if(history.length === 0) return ( 
-    //     <MainView>
-    //         <EmptyHistory />
-    // </MainView>
-    // )
     
     return <MainView>
             <Box className="mb-3" />
@@ -118,7 +127,7 @@ export default function History() {
             <Ionicons name="calendar" size={24} color={'rgba(52, 52, 52, 0.5)'} />
         </View>
 
-        {history.length == 0 
+        {(history.length == 0 && !isLoading)
         ?  <EmptyHistory />
         : 
         <View className="flex-1">
@@ -129,6 +138,7 @@ export default function History() {
                 renderItem={({item}) => <WeightHistoryItem item={item} />}
                 keyExtractor={item => item.id?.toString()!!}
                 ItemSeparatorComponent={({item}) => <Box className="mb-4" />}
+                showsVerticalScrollIndicator={false}
                 />      
                 <LoadingSpinner visible={isLoading} />
                 </View>
