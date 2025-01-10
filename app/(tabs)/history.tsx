@@ -122,8 +122,10 @@ export default function History() {
     }
 
     const buildChartData = async (history: WeightEntryHistory[]) => {
-        const labels = history.map(h => dayjs(h.date.toString()).locale('fr').format("DD MMM"))
-        const data   = history.map(h => h.value)
+        const historyDeepCopy = [...history]
+        historyDeepCopy.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
+        const labels = historyDeepCopy.map(h => dayjs(h.date.toString()).locale('fr').format("DD MMM"))
+        const data   = historyDeepCopy.map(h => h.value)
 
         setChartData({labels, data})
     }
