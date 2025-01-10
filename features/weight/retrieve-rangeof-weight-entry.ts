@@ -1,10 +1,10 @@
 import { getWeightEntryBetween, getWeightEntryForDate, initDb } from "@/provider/db";
-import { WeightEntry } from "./types/weight-entry";
+import { WeightEntry, WeightEntryHistory } from "./types/weight-entry";
 import { CustomRange, DateRange } from "./types/date-range";
 import dayjs from "dayjs";
 
-export async function retrieveRangeofWeightEntry(params: DateRange): Promise<WeightEntry[]> {
-    let entries: WeightEntry[] = []
+export async function retrieveRangeofWeightEntry(params: DateRange): Promise<WeightEntryHistory[]> {
+    let entries: WeightEntryHistory[] = []
     let fromDate: Date 
     let toDate: Date 
     if(params.type == 'custom') {
@@ -21,8 +21,16 @@ export async function retrieveRangeofWeightEntry(params: DateRange): Promise<Wei
         .then(async () => {
             console.log("retrieve from ", fromDate, " to ", toDate)
             const results = await getWeightEntryBetween(fromDate, toDate);
-            entries = results as WeightEntry[];
+            entries = results as WeightEntryHistory[];
             
+            for(let i=0; i < entries.length -1; i++) {
+                const curr = entries[i].value
+                const prev = entries[i+1].value
+                const deltaN = curr - prev
+                const deltaP = (deltaN * 100) / Math.max(curr, prev)
+                entries[i].deltaN = deltaN
+                entries[i].deltaP = parseFloat(deltaP.toFixed(1))
+            }
             console.log("finding rangeof entries", entries)
         })  
         .catch(e => {

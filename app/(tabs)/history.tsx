@@ -2,7 +2,7 @@ import { MainView } from "@/components/layouts";
 import { VStack } from "@/components/ui/vstack";
 import { FONT_NAME } from "@/constants";
 import { retrieveRangeofWeightEntry } from "@/features/weight/retrieve-rangeof-weight-entry";
-import { WeightEntry } from "@/features/weight/types/weight-entry";
+import { WeightEntry, WeightEntryHistory } from "@/features/weight/types/weight-entry";
 import dayjs from "dayjs";
 import { Suspense, useEffect, useState } from "react";
 import { FlatList, Modal, Text, TouchableOpacity, View } from "react-native";
@@ -17,7 +17,7 @@ import ActionButton from "@/components/buttons/ActionButton";
 import { HStack } from "@/components/ui/hstack";
 
 interface WeightHistoryItemProps {
-  item: WeightEntry
+  item: WeightEntryHistory
 }
 type PredifinedLabel = {
     id: LiteralRange,
@@ -48,13 +48,23 @@ const WeightHistoryItem: React.FC<WeightHistoryItemProps> = ({item}) => {
                             className="font-bold text-3xl">{item.value} kg
                     </Text>
                     <Box className="mx-4" />
-                    <View className="flex-row justify-between  items-center w-24 bg-secondary-1 py-1 px-[5px] rounded-full tracking-wide">
-                        <Text className="text-xs font-bold"> + </Text>
-                        <Text className="text-xs font-bold">5kg</Text>
-                        <Ionicons name="trending-up-outline" size={14} className="font-bold" />
-                
-
+                    {item.deltaN != undefined && 
+                    <View className={`flex-row justify-between  items-center w-24 
+                        ${item.deltaN <= 0 ? 'bg-error-500': 'bg-success-500'} 
+                        py-1 px-[5px] rounded-full tracking-wide`}>
+                        <Text className="text-xs font-bold"> {item.deltaN > 0 ? '+': '-'} </Text>
+                        <Text className="text-xs font-bold">{Math.abs(item.deltaN)}kg</Text>
+                        {item.deltaN > 0 && 
+                            <Ionicons name="trending-up-outline" size={14} className="font-bold" />
+                        }
+                        {item.deltaN < 0 && 
+                            <Ionicons name="trending-down-outline" size={14} className="font-bold" />
+                        }
+                        {item.deltaN == 0 && 
+                            <Ionicons name="trending-down-outline" size={14} className="font-bold" />
+                        }
                     </View>
+                    }
                 </View>
                 <View >
                     <HStack>
@@ -91,13 +101,13 @@ const EmptyHistory = () => {
 }
 export default function History() {
     const [selectedCustomDateRange, setSelectedCustomDateRange] = useState<{from: Date, to: Date}>()
-    const [history, setHistory]                                 = useState<WeightEntry[]>([])
+    const [history, setHistory]                                 = useState<WeightEntryHistory[]>([])
     const [isLoading, setIsLoading]                             = useState(false)
     const [selectedPredefinedRange, setSelectedPredefinedRange] = useState<LiteralRange>("all")
 
     const fetchWeightHistory = async () => {
         setIsLoading(true)
-        const history: WeightEntry[] = await retrieveRangeofWeightEntry({type: 'predefined', range: selectedPredefinedRange})
+        const history: WeightEntryHistory[] = await retrieveRangeofWeightEntry({type: 'predefined', range: selectedPredefinedRange})
         setHistory(history)
         setIsLoading(false)
     }
