@@ -5,7 +5,7 @@ import { retrieveRangeofWeightEntry } from "@/features/weight/retrieve-rangeof-w
 import { WeightEntry, WeightEntryHistory } from "@/features/weight/types/weight-entry";
 import dayjs from "dayjs";
 import { Suspense, useEffect, useState } from "react";
-import { FlatList, Modal, Text, TouchableOpacity, View } from "react-native";
+import { Dimensions, FlatList, Modal, Text, TouchableOpacity, View } from "react-native";
 import 'dayjs/locale/fr'
 import { Box } from "@/components/ui/box";
 import Ionicons from '@expo/vector-icons/Ionicons'
@@ -15,6 +15,8 @@ import { LiteralRange } from "@/features/weight/types/date-range";
 import { Link } from "expo-router";
 import ActionButton from "@/components/buttons/ActionButton";
 import { HStack } from "@/components/ui/hstack";
+import { LineChart } from "react-native-chart-kit";
+import { PeriodicLineChart } from "@/components/charts";
 
 interface WeightHistoryItemProps {
   item: WeightEntryHistory
@@ -45,7 +47,7 @@ const WeightHistoryItem: React.FC<WeightHistoryItemProps> = ({item}) => {
                 >
                     <Text 
                             style={{fontFamily: FONT_NAME}}
-                            className="font-bold text-3xl">{item.value} kg
+                            className="font-bold text-3xl">{item.value.toFixed(1)} kg
                     </Text>
                     <Box className="mx-4" />
                     {item.deltaN != undefined && 
@@ -99,17 +101,31 @@ const EmptyHistory = () => {
         </Link>
     </View>
 }
+type ChartData = {
+    labels: string[]
+    data: number[]
+}
 export default function History() {
     const [selectedCustomDateRange, setSelectedCustomDateRange] = useState<{from: Date, to: Date}>()
     const [history, setHistory]                                 = useState<WeightEntryHistory[]>([])
     const [isLoading, setIsLoading]                             = useState(false)
     const [selectedPredefinedRange, setSelectedPredefinedRange] = useState<LiteralRange>("all")
+    const [chartData, setChartData]                             = useState<ChartData>()
 
     const fetchWeightHistory = async () => {
         setIsLoading(true)
         const history: WeightEntryHistory[] = await retrieveRangeofWeightEntry({type: 'predefined', range: selectedPredefinedRange})
         setHistory(history)
         setIsLoading(false)
+
+        buildChartData(history)
+    }
+
+    const buildChartData = async (history: WeightEntryHistory[]) => {
+        const labels = history.map(h => dayjs(h.date.toString()).locale('fr').format("DD MMM"))
+        const data   = history.map(h => h.value)
+
+        setChartData({labels, data})
     }
 
     useEffect(() => {
@@ -134,14 +150,15 @@ export default function History() {
                     </Text>
                 </TouchableOpacity>
             )))}
-            <Ionicons name="calendar" size={24} color={'rgba(52, 52, 52, 0.5)'} />
         </View>
 
         {(history.length == 0 && !isLoading)
         ?  <EmptyHistory />
         : 
         <View className="flex-1">
-
+            {chartData && 
+                <PeriodicLineChart labels={chartData.labels} data={chartData.data} />
+            }
             <Box className="mb-5" />
             <FlatList 
                 data={history}
