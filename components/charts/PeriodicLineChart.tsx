@@ -11,7 +11,7 @@ const PeriodicLineChart = (props: PeriodicLineChartProps) => {
   return (
     <LineChart
     data={{
-      labels: labels,
+      labels: [],
       datasets: [
         {
           data: data

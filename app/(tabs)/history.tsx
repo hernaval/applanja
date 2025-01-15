@@ -154,6 +154,7 @@ export default function History() {
             )))}
         </View>
 
+            <Box className="mb-3" />
         {(history.length == 0 && !isLoading)
         ?  <EmptyHistory />
         : 
