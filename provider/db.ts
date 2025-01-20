@@ -1,14 +1,16 @@
 import * as SQLiteDatabase from "expo-sqlite";
 import { WeightEntry } from "../features/weight/types/weight-entry";
 import dayjs from "dayjs";
+import { Goal } from "@/features/goal/types/goal";
 type ColumnMigration = {
     name: string 
     script: string 
 }
 
+const DB_NAME = "applanja.bd"
 async function initDb() {
     console.log("init db")
-    const db = await SQLiteDatabase.openDatabaseAsync('applanja.bd');
+    const db = await SQLiteDatabase.openDatabaseAsync(DB_NAME);
 
     await db.execAsync(`
         PRAGMA journal_mode = WAL;
@@ -17,7 +19,11 @@ async function initDb() {
             date DATE NOT NULL,
             value INTEGER NOT NULL
         );
-
+        CREATE TABLE IF NOT EXISTS Goal (
+            id INTEGER PRIMARY KEY NOT NULL,
+            date DATE NOT NULL,
+            value INTEGER NOT NULL
+        );
     `);
 
     const columnNotExist = async (name: string): Promise<boolean> => {
@@ -49,7 +55,7 @@ async function initDb() {
 async function saveWeightEntry(entry: WeightEntry) {
     console.log("save new entry", entry)
     try {
-        const db = await SQLiteDatabase.openDatabaseAsync('applanja.bd');
+        const db = await SQLiteDatabase.openDatabaseAsync(DB_NAME);
         await db.runAsync(`
             INSERT INTO WeightEntry(date, value, note) VALUES ('${dayjs(entry.date).format('YYYY-MM-DD')}', '${entry.value}', '${entry.note}');    
         `)
@@ -60,7 +66,7 @@ async function saveWeightEntry(entry: WeightEntry) {
 
 async function updateWeightEntry(entry: WeightEntry) {
     try {
-        const db = await SQLiteDatabase.openDatabaseAsync('applanja.bd');
+        const db = await SQLiteDatabase.openDatabaseAsync(DB_NAME);
         await db.runAsync(`
             UPDATE WeightEntry set value = '${entry.value}', note = '${entry.note}' 
                 WHERE id = ${entry.id}
@@ -72,21 +78,21 @@ async function updateWeightEntry(entry: WeightEntry) {
 }
 
 async function getAllWeightEntries() {
-    const db      = await SQLiteDatabase.openDatabaseAsync('applanja.bd');
+    const db      = await SQLiteDatabase.openDatabaseAsync(DB_NAME);
     const entries = db.getAllAsync("select * from WeightEntry")
     return entries
 }
 
 async function getWeightEntryForDate(date: Date) {
     console.log("entry for date ", date)
-    const db    = await SQLiteDatabase.openDatabaseAsync('applanja.bd');
+    const db    = await SQLiteDatabase.openDatabaseAsync(DB_NAME);
     const entry = db.getFirstAsync(`SELECT * from WeightEntry WHERE date = '${dayjs(date).format("YYYY-MM-DD")}' `)
     return entry
 }
 
 async function getWeightEntryBetween(from: Date, to: Date) {
     console.log("entry from ",from," to ", to)
-    const db    = await SQLiteDatabase.openDatabaseAsync('applanja.bd');
+    const db    = await SQLiteDatabase.openDatabaseAsync(DB_NAME);
     const entries = await db.getAllAsync(`SELECT * from WeightEntry 
             WHERE date > '${dayjs(from).format("YYYY-MM-DD")}' 
             AND date <= '${dayjs(to).format("YYYY-MM-DD")}'
@@ -96,9 +102,44 @@ async function getWeightEntryBetween(from: Date, to: Date) {
 }
 
 async function getLastWeightEntry() {
-    const db    = await SQLiteDatabase.openDatabaseAsync('applanja.bd');
+    const db    = await SQLiteDatabase.openDatabaseAsync(DB_NAME);
     const entry = db.getFirstAsync(`SELECT * from WeightEntry ORDER BY id desc limit 1`)
     return entry
+}
+
+// ------------------------------
+//            GOALS
+//-------------------------------
+
+async function saveGoal(goal: Goal) {
+    console.log("save new goal", goal)
+    try {
+        const db = await SQLiteDatabase.openDatabaseAsync(DB_NAME);
+        await db.runAsync(`
+            INSERT INTO Goal(date, value) VALUES ('${dayjs(goal.date).format('YYYY-MM-DD')}', '${goal.value}');    
+        `)
+    }catch(e) {
+        console.log(e)
+    }
+}
+
+async function updateGoal(goal: Goal) {
+    try {
+        const db = await SQLiteDatabase.openDatabaseAsync(DB_NAME);
+        await db.runAsync(`
+            UPDATE Weightgoal set value = '${goal.value}' 
+                WHERE id = ${goal.id}
+            ;    
+        `)
+    }catch(e) {
+        console.log(e)
+    }
+}
+
+async function getMyGoal() {
+    const db    = await SQLiteDatabase.openDatabaseAsync(DB_NAME);
+    const goal = db.getFirstAsync(`SELECT * from Goal limit 1`)
+    return goal
 }
 
 export {
@@ -108,5 +149,9 @@ export {
     getAllWeightEntries,
     getWeightEntryForDate,
     getLastWeightEntry,
-    getWeightEntryBetween
+    getWeightEntryBetween,
+
+    saveGoal,
+    updateGoal,
+    getMyGoal
 }
