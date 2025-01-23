@@ -33,7 +33,7 @@ const predefinedRange: PredifinedLabel[] = [
     {id: '3m', label: "3m"},
     {id: '1y', label: "1a"},
 ]
-const WeightHistoryItem: React.FC<WeightHistoryItemProps> = ({item}) => {
+export const WeightHistoryItem: React.FC<WeightHistoryItemProps> = ({item}) => {
     return <View className="bg-secondary-10 rounded py-2 px-4">
         <VStack>
             <Text
